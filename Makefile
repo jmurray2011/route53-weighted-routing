@@ -3,7 +3,7 @@ include .env
 export $(shell sed 's/=.*//' .env)
 
 # Define variables
-ZIP_FILE=lambda_handler.zip
+ZIP_FILE=lambda_function.zip
 
 # Default target executed when no arguments are given to make
 all: deploy

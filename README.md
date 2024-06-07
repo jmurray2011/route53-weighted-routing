@@ -14,15 +14,67 @@ Before you deploy this script, ensure you have:
 
 - AWS account with access to Route53, Lambda, and CloudWatch.
 - The necessary permissions to create and manage Lambda functions and Route53 records.
+- A lambda function with the necessary permissions to modify Route53 records.
+- A DNS record set in Route53 with the desired primary and secondary resources.
+  - Ensure that the record set is a weighted routing policy.
+  - The primary and secondary resources should have different weights (e.g. 0 and 1, where 0 is the secondary resource and 1 is the primary resource).
+    - Note that records weighted 0 will not receive traffic.
+  - The primary and secondary resources should have unique identifiers.
+
+### IAM Permissions
+
+Ensure that the Lambda function has the necessary permissions to modify Route53 records. You can attach the following policy to a role and assign it to the Lambda.
+
+#### Trust Policy
+
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "lambda.amazonaws.com"
+            },
+            "Action": "sts:AssumeRole"
+        }
+    ]
+}
+```
+
+#### Permissions Policy
+
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "route53:ListResourceRecordSets",
+                "route53:ChangeResourceRecordSets"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+            ],
+            "Resource": "arn:aws:logs:*:*:*"
+        }
+    ]
+}
+```
 
 ## Environment Variables
 
-Set the following local environment variables:
-
-You can use the example.env, just rename to .env and source it
+Set the following local environment variables. You can use the example.env, just rename to .env and source it. FUNCTIONS_NAME is the name of the lambda function you created in the AWS console.
 
 - `FUNCTION_NAME=test-failover-dns`
-- `SOURCE_FILE=lambda_handler.py`
+- `SOURCE_FILE=lambda_function.py`
 - `AWS_PROFILE=default`
 - `AWS_REGION=us-east-1`
 
