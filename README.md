@@ -19,7 +19,7 @@ Before you deploy this script, ensure you have:
 
 Set the following local environment variables:
 
-# you can use the example.env, just rename to .env and source it
+You can use the example.env, just rename to .env and source it
 
 - `FUNCTION_NAME=test-failover-dns`
 - `SOURCE_FILE=lambda_handler.py`
